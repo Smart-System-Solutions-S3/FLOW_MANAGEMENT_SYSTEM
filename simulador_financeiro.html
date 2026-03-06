@@ -45,6 +45,7 @@
 </html>
 <script>
     function calcular(){
+        // essas variáveis globais armazenam os valores fixos essenciais para o cálculo do retorno investido
         let porte = ipt_porte.value;
         let qtdInvest = Number(ipt_invest.value);
         let tmhEstabelecimento = Number(ipt_metros_quadrados.value)
@@ -52,6 +53,8 @@
         let qtdSensores = (tmhEstabelecimento / 18).toFixed(2)
         let valorInstalacao = (qtdSensores * 50) + servicoInstalacao
         
+        // no caso do gerente do estabelecimento estar ciente do tamanho aproximado de seu estabelecimento
+        // para que o cálculo de custos com sensores seja personalizado de acordo com a extensão do estabelecimento
         if (tmhEstabelecimento != 0) {
 
             if (tmhEstabelecimento <= 200) {
@@ -65,7 +68,9 @@
                 calculoROI(650, 400, 100, valorInstalacao, qtdInvest, mensalidade)
             }
 
-        } else{
+        } else {
+            // em caso do gerente não saber o tamanho do estabelecimento em metros², ele informa o porte do restaurante e,
+            // assim, instituimos valores fixos para o cálculo
             if(porte.toLowerCase() == 'pequeno'){
                 let mensalidade = 300
                 calculoROI(120, 80, 60, 900, qtdInvest, mensalidade)
@@ -82,6 +87,8 @@
 
         }
 
+        // o cálculo do ROI é feito em uma função separada, para que a repetitividade do código seja reduzida
+        // em função da variedade de variáveis que serão apicadas no caso de cada restaurante em específico
         function calculoROI(media, fluxo, ticketMedio, valorInstalacao, qtdInvest, mensalidade) {
     
             let alvo = media - fluxo
