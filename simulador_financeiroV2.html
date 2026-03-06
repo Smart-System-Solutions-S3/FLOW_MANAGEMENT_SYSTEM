@@ -44,122 +44,114 @@
 </body>
 </html>
 <script>
+    
     function calcular(){
         // ===============================================================
         // RECEBIMENTO DE VALORES DO INPUT
         // ===============================================================
         let porte = ipt_porte.value;
         let qtdInvest = Number(ipt_invest.value);
-        let tmhEstabelecimento = Number(ipt_metros_quadrados.value)
-        let qtdSensores = (tmhEstabelecimento / 18).toFixed(2)
-        let servicoInstalacao = 500
-        let mensalidade = 0
+        let tmhEstabelecimento = Number(ipt_metros_quadrados.value);
+        let qtdSensores = tmhEstabelecimento / 18;
+        let servicoInstalacao = 500;
+        let valorInstalacao = (qtdSensores * 50) + servicoInstalacao;
+        let mensalidade = 0;
 
-        // ===============================================================
-        // CALCULO DO ROI
-        // ===============================================================
-
-        let media
-        let fluxo
-        let alvo
-        let faturamentoBruto
-        let lucro
-        let valorInvestido /*Baseado em um ROI 5:1*/
-        let lucroLiquido
-        let valorInstalacao = (qtdSensores * 50) + servicoInstalacao
-        let ROIpordia
-
-        let lucroMes
-        let ROImensal
-        let lucroAno
-        let ROIano
-
-        // =================================================================
+        let media;
+        let fluxo;
+        let alvo;
+        let faturamentoBruto;
+        let lucro;
+        let valorInvestido;
+        let lucroLiquido;
+        let ROIpordia;
+        let lucroMes;
+        let ROImensal;
+        let lucroAno;
+        let ROIano;
 
         if (tmhEstabelecimento != 0) {
             if (tmhEstabelecimento <= 200) {
-                mensalidade = 300
-                media = 120
-                fluxo = 80
-                alvo = media - fluxo
+                mensalidade = 300;
+                media = 120;
+                fluxo = 80;
+                alvo = media - fluxo;
 
-                faturamentoBruto = alvo  * 60 // ticket médio
-                lucro = faturamentoBruto * 0.11
-                valorInvestido = lucro / 5 /*Baseado em um ROI 5:1*/
-                lucro -= valorInvestido
+                faturamentoBruto = alvo * 60;
+                lucro = faturamentoBruto * 0.11;
 
-                lucroLiquido = lucro - valorInstalacao 
-                
-                ROIpordia = ((lucroLiquido - valorInstalacao) / valorInstalacao) * 100
+                // baseado em um ROI 5:1 - subtraindo o custo de investimento em marketing
+                valorInvestido = lucro / 5;
+                lucro -= valorInvestido;
 
-                lucroMes = lucroLiquido * qtdInvest
+                lucroLiquido = lucro - valorInstalacao;
+                ROIpordia = (lucroLiquido / valorInstalacao) * 100;
 
-                ROImensal = (lucroMes - (valorInstalacao + mensalidade)) / (valorInstalacao + mensalidade) * 100
+                lucroMes = lucro * qtdInvest;
 
-                lucroAno = lucroMes * 12
+                // ROI Mensal considera a instalação + mensalidade como base de custo
+                ROImensal = (lucroMes - (valorInstalacao + mensalidade)) / (valorInstalacao + mensalidade) * 100;
 
-                ROIano = (lucroAno - (valorInstalacao + (mensalidade * 12))) / (valorInstalacao + (mensalidade * 12)) * 100
+                lucroAno = lucroMes * 12;
+
+                // ROI Anual considera a instalação + 12 meses de mensalidade
+                ROIano = (lucroAno - (valorInstalacao + (mensalidade * 12))) / (valorInstalacao + (mensalidade * 12)) * 100;
 
                 resposta.innerHTML = `Quando você utilizar o FMS para identificar fluxo abaixo da média, e investir em ações que impulsionem esse movimento, você obterá:<br>
                 ${lucro.toFixed(2)} por dia, com um ROI de ${ROIpordia.toFixed()}%;<br>
                 ${lucroMes.toFixed(2)} por mês, com um ROI mensal de ${ROImensal.toFixed()}%<br>
-                ${lucroAno.toFixed(2)} por ano, com um ROI anual de ${ROIano.toFixed()}%<br>`
-
-                console.log(ROIpordia)
-                console.log(ROImensal)
-                console.log(ROIano)
+                ${lucroAno.toFixed(2)} por ano, com um ROI anual de ${ROIano.toFixed()}%<br>`;
             } else if (tmhEstabelecimento <= 400) {
-                mensalidade = 500
-                media = 450
-                fluxo = 250
-                alvo = media - fluxo
+                mensalidade = 500;
+                media = 450;
+                fluxo = 250;
+                alvo = media - fluxo;
 
-                faturamentoBruto = alvo  * 80 // ticket médio
-                lucro = faturamentoBruto * 0.11
-                valorInvestido = lucro / 5 /*Baseado em um ROI 5:1*/
-                lucro -= valorInvestido
+                faturamentoBruto = alvo * 80;
+                lucro = faturamentoBruto * 0.11;
 
-                lucroLiquido = lucro - valorInstalacao 
-                ROIpordia = ((lucroLiquido - valorInstalacao) / valorInstalacao) * 100
+                valorInvestido = lucro / 5;
+                lucro -= valorInvestido;
 
-                lucroMes = lucroLiquido * qtdInvest
+                lucroLiquido = lucro - valorInstalacao;
+                ROIpordia = (lucroLiquido / valorInstalacao) * 100;
 
-                ROImensal = (lucroMes - (valorInstalacao + mensalidade)) / (valorInstalacao + mensalidade) * 100
+                lucroMes = lucro * qtdInvest;
+                ROImensal = (lucroMes - (valorInstalacao + mensalidade)) / (valorInstalacao + mensalidade) * 100;
 
-                lucroAno = lucroMes * 12
-
-                ROIano = (lucroAno - (valorInstalacao + (mensalidade * 12))) / (valorInstalacao + (mensalidade * 12)) * 100
+                lucroAno = lucroMes * 12;
+                ROIano = (lucroAno - (valorInstalacao + (mensalidade * 12))) / (valorInstalacao + (mensalidade * 12)) * 100;
 
                 resposta.innerHTML = `Quando você utilizar o FMS para identificar fluxo abaixo da média, e investir em ações que impulsionem esse movimento, você obterá:<br>
                 ${lucro.toFixed(2)} por dia, com um ROI de ${ROIpordia.toFixed()}%;<br>
                 ${lucroMes.toFixed(2)} por mês, com um ROI mensal de ${ROImensal.toFixed()}%<br>
-                ${lucroAno.toFixed(2)} por ano, com um ROI anual de ${ROIano.toFixed()}%<br>`
+                ${lucroAno.toFixed(2)} por ano, com um ROI anual de ${ROIano.toFixed()}%<br>`;
+
             } else {
-                mensalidade = 800
-                media = 650
-                fluxo = 400
-                alvo = media - fluxo
+                mensalidade = 800;
+                media = 650;
+                fluxo = 400;
+                alvo = media - fluxo;
 
-                faturamentoBruto = alvo  * 100 // ticket médio
-                lucro = faturamentoBruto * 0.11
-                valorInvestido = lucro / 5 /*Baseado em um ROI 5:1*/
-                lucro -= valorInvestido
+                faturamentoBruto = alvo * 100;
+                lucro = faturamentoBruto * 0.11;
 
-                lucroLiquido = lucro - valorInstalacao 
-                ROIpordia = ((lucroLiquido) / valorInstalacao) * 100
+                valorInvestido = lucro / 5;
+                lucro -= valorInvestido;
 
-                lucroMes = lucroLiquido * qtdInvest
+                lucroLiquido = lucro - valorInstalacao;
+                ROIpordia = (lucroLiquido / valorInstalacao) * 100;
 
-                ROImensal = (lucroMes - (valorInstalacao + mensalidade)) / (valorInstalacao + mensalidade) * 100
+                lucroMes = lucro * qtdInvest;
+                ROImensal = (lucroMes - (valorInstalacao + mensalidade)) / (valorInstalacao + mensalidade) * 100;
 
-                lucroAno = lucroMes * 12
-
-                ROIano = (lucroAno - (valorInstalacao + (mensalidade * 12))) / (valorInstalacao + (mensalidade * 12)) * 100
+                lucroAno = lucroMes * 12;
+                ROIano = (lucroAno - (valorInstalacao + (mensalidade * 12))) / (valorInstalacao + (mensalidade * 12)) * 100;
 
                 resposta.innerHTML = `Quando você utilizar o FMS para identificar fluxo abaixo da média, e investir em ações que impulsionem esse movimento, você obterá:<br>
                 ${lucro.toFixed(2)} por dia, com um ROI de ${ROIpordia.toFixed()}%;<br>
                 ${lucroMes.toFixed(2)} por mês, com um ROI mensal de ${ROImensal.toFixed()}%<br>
-                ${lucroAno.toFixed(2)} por ano, com um ROI anual de ${ROIano.toFixed()}%<br>`
+                ${lucroAno.toFixed(2)} por ano, com um ROI anual de ${ROIano.toFixed()}%<br>`;
             }
 
         } else if (tmhEstabelecimento == null){

@@ -53,7 +53,7 @@
         let qtdSensores = (tmhEstabelecimento / 18).toFixed(2)
         let valorInstalacao = (qtdSensores * 50) + servicoInstalacao
         let mensalidade = 0
-        
+
         // no caso do gerente do estabelecimento estar ciente do tamanho aproximado de seu estabelecimento
         // para que o cálculo de custos com sensores seja personalizado de acordo com a extensão do estabelecimento
         if (tmhEstabelecimento != 0) {
@@ -94,20 +94,33 @@
     
             let alvo = media - fluxo
             let faturamentoBruto = alvo  * ticketMedio
+            console.log("faturamento bruto: " + faturamentoBruto)
             let lucro = faturamentoBruto * 0.11
+
+            console.log("lucro: " + lucro)
+
             let valorInvestido = lucro / 5 /*Baseado em um ROI 5:1*/
             lucro -= valorInvestido 
+            console.log("lucro - valorInvestido: " + lucro)
+
             let lucroLiquido =  lucro - valorInstalacao
+            console.log("lucro liquido: " + lucroLiquido)
+
             let ROIpordia = ((lucroLiquido) / valorInstalacao) * 100
-    
+            console.log("Roi por dia: " + ROIpordia)
+
             let lucroMes = lucro * qtdInvest
-    
+            console.log("Lucro mes: " + lucroMes)
+
             let ROImensal = (lucroMes - (valorInstalacao + mensalidade)) / (valorInstalacao + mensalidade) * 100
-    
+            console.log("Roi mensal: " + ROImensal)
+
             let lucroAno = lucroMes * 12
-    
+            console.log("Lucro ano: " + lucroAno)
+
             let ROIano = (lucroAno - (valorInstalacao + (mensalidade * 12))) / (valorInstalacao + (mensalidade * 12)) * 100
-            
+            console.log("Roi por ano: " + ROIano)
+
             resposta.innerHTML = `Quando você utilizar o FMS para identificar fluxo abaixo da média, e investir em ações que impulsionem esse movimento, você obterá:<br>
             ${lucro.toFixed(2)} por dia, com um ROI de ${ROIpordia.toFixed()}%;<br>
             ${lucroMes.toFixed(2)} por mês, com um ROI mensal de ${ROImensal.toFixed()}%<br>
