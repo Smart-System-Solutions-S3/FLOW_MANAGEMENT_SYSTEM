@@ -8,34 +8,21 @@
 <body>
     <h1>Simulador Financeiro FMS</h1>
     <p>Saiba como utilizar o FMS pode te auxiliar a ganhar mais!</p>
-    <p>Informando apenas o porte do seu restaurante será feito um cálculo para demonstrar quanto<br>
-    Você pode obter de lucro líquido e ROI sobre a instalação dos sensores utilizando o FMS como uma 
-    ferramenta para investir em marketing</p>
+    
+    <p>O pacote FMS inclui uma assinatura de R$50,00 mensais que cobrem custos de suporte e manutenção</p>
+
+    <span>Informe quantos investimentos mensais em marketing você fará: </span>
+    <input type="text" id="ipt_invest" placeholder="Ex: 4"><br>
 
     <p>Quantos metros², aproximadamente, tem o seu estabelecimento?</p>
     <input type="text" id="ipt_metros_quadrados">
 
-    <p>Não sabe a área do seu estabelecimento? Então informe o porte:</p>
-    <p>Não sabe o seu porte??<br>
-    Pequeno - 10 a 20 mesas<br>
-    Médio - 20 a 40 mesas<br>
-    Grande - + de 50 mesas</p>
+    <p>Não sabe a área? Clique abaixo para informar o porte:</p>
+    <button onclick="exibirInputsPorte()">Informe o Porte</button>
 
-    <p>Média de sensores por porte: <br>
-    Pequeno - 4 sensores <br>
-    Médio - 6 sensores <br>
-    Grande - 10 sensores <br></p>
-
-    <p>O pacote FMS inclui uma assinatura de R$50,00 mensais que cobrem custos de suporte e manutenção</p>
-
-    <span>De que porte é seu restaurante?</span>
-    <input type="text" name="" id="ipt_porte" placeholder="Pequeno, Médio ou Grande"><br>
-
-    <span>O lucro obtido será reflexo da quantidade de vezes que você investir em marketing mensalmente,<br>
-    Informe quantos investimentos mensais em marketing você fará: </span>
-    <input type="text" name="" id="ipt_invest" placeholder="Investimentos mensais"><br>
+    <div id="div_calcular_porte"></div>
     
-
+    <br>
     <button onclick="calcular()">Calcule o ROI</button>
 
     <hr>
@@ -44,190 +31,131 @@
 </body>
 </html>
 <script>
-    
-    function calcular(){
+    // Função que utiliza innerHTML para criar os campos dinamicamente
+    function exibirInputsPorte() {
+        div_calcular_porte.innerHTML = `
+            <p>Pequeno - 10 a 20 mesas | Médio - 20 a 40 mesas | Grande - + de 50 mesas</p>
+            <span>De que porte é seu restaurante?</span>
+            <input type="text" id="ipt_porte" placeholder="Pequeno, Médio ou Grande"><br>
+        `;
+    }
+
+    function calcular() {   
         // ===============================================================
-        // RECEBIMENTO DE VALORES DO INPUT
-        // ===============================================================
-        let porte = ipt_porte.value;
+        // 1. CAPTURA DE DADOS
+        // ====================v==========================================
         let qtdInvest = Number(ipt_invest.value);
         let tmhEstabelecimento = Number(ipt_metros_quadrados.value);
-        let qtdSensores = tmhEstabelecimento / 18;
-        let servicoInstalacao = 500;
-        let valorInstalacao = (qtdSensores * 50) + servicoInstalacao;
-        let mensalidade = 0;
+        
+        // CAPTURA SEGURA: Só tenta pegar o valor se o input existir na página
+        let porte = "";
+        if (document.getElementById('ipt_porte') != null) {
+            porte = document.getElementById('ipt_porte').value.toLowerCase();
+        }
 
-        let media;
-        let fluxo;
-        let alvo;
-        let faturamentoBruto;
-        let lucro;
-        let valorInvestido;
-        let lucroLiquido;
-        let ROIpordia;
-        let lucroMes;
-        let ROImensal;
-        let lucroAno;
-        let ROIano;
+        // Variáveis de cálculo
+        let mediaFluxo, baixaFluxo, faturamentoBruto, lucroBase, lucroLiquidoDiario, 
+            roiDIARIO, lucroMes, roiMENSAL, lucroAno, roiANUAL;
 
-        if (tmhEstabelecimento != 0) {
+        // ===============================================================
+        // 2. LÓGICA POR METRAGEM (Prioridade se tmhEstabelecimento > 0)
+        // ===============================================================
+        if (tmhEstabelecimento > 0) {
+            let qtdSensores = tmhEstabelecimento / 18;
+            let valorInstalacao = (qtdSensores * 50) + 500;
+            let mensalidade = 0;
+
             if (tmhEstabelecimento <= 200) {
-                mensalidade = 300;
-                media = 120;
-                fluxo = 80;
-                alvo = media - fluxo;
-
-                faturamentoBruto = alvo * 60;
-                lucro = faturamentoBruto * 0.11;
-
-                // baseado em um ROI 5:1 - subtraindo o custo de investimento em marketing
-                valorInvestido = lucro / 5;
-                lucro -= valorInvestido;
-
-                lucroLiquido = lucro - valorInstalacao;
-                ROIpordia = (lucroLiquido / valorInstalacao) * 100;
-
-                lucroMes = lucro * qtdInvest;
-
-                // ROI Mensal considera a instalação + mensalidade como base de custo
-                ROImensal = (lucroMes - (valorInstalacao + mensalidade)) / (valorInstalacao + mensalidade) * 100;
-
-                lucroAno = lucroMes * 12;
-
-                // ROI Anual considera a instalação + 12 meses de mensalidade
-                ROIano = (lucroAno - (valorInstalacao + (mensalidade * 12))) / (valorInstalacao + (mensalidade * 12)) * 100;
-
-                resposta.innerHTML = `Quando você utilizar o FMS para identificar fluxo abaixo da média, e investir em ações que impulsionem esse movimento, você obterá:<br>
-                ${lucro.toFixed(2)} por dia, com um ROI de ${ROIpordia.toFixed()}%;<br>
-                ${lucroMes.toFixed(2)} por mês, com um ROI mensal de ${ROImensal.toFixed()}%<br>
-                ${lucroAno.toFixed(2)} por ano, com um ROI anual de ${ROIano.toFixed()}%<br>`;
+                mensalidade = 300; mediaFluxo = 120; baixaFluxo = 80;
+                faturamentoBruto = (mediaFluxo - baixaFluxo) * 60;
             } else if (tmhEstabelecimento <= 400) {
-                mensalidade = 500;
-                media = 450;
-                fluxo = 250;
-                alvo = media - fluxo;
-
-                faturamentoBruto = alvo * 80;
-                lucro = faturamentoBruto * 0.11;
-
-                valorInvestido = lucro / 5;
-                lucro -= valorInvestido;
-
-                lucroLiquido = lucro - valorInstalacao;
-                ROIpordia = (lucroLiquido / valorInstalacao) * 100;
-
-                lucroMes = lucro * qtdInvest;
-                ROImensal = (lucroMes - (valorInstalacao + mensalidade)) / (valorInstalacao + mensalidade) * 100;
-
-                lucroAno = lucroMes * 12;
-                ROIano = (lucroAno - (valorInstalacao + (mensalidade * 12))) / (valorInstalacao + (mensalidade * 12)) * 100;
-
-                resposta.innerHTML = `Quando você utilizar o FMS para identificar fluxo abaixo da média, e investir em ações que impulsionem esse movimento, você obterá:<br>
-                ${lucro.toFixed(2)} por dia, com um ROI de ${ROIpordia.toFixed()}%;<br>
-                ${lucroMes.toFixed(2)} por mês, com um ROI mensal de ${ROImensal.toFixed()}%<br>
-                ${lucroAno.toFixed(2)} por ano, com um ROI anual de ${ROIano.toFixed()}%<br>`;
-
+                mensalidade = 500; mediaFluxo = 450; baixaFluxo = 250;
+                faturamentoBruto = (mediaFluxo - baixaFluxo) * 80;
             } else {
-                mensalidade = 800;
-                media = 650;
-                fluxo = 400;
-                alvo = media - fluxo;
-
-                faturamentoBruto = alvo * 100;
-                lucro = faturamentoBruto * 0.11;
-
-                valorInvestido = lucro / 5;
-                lucro -= valorInvestido;
-
-                lucroLiquido = lucro - valorInstalacao;
-                ROIpordia = (lucroLiquido / valorInstalacao) * 100;
-
-                lucroMes = lucro * qtdInvest;
-                ROImensal = (lucroMes - (valorInstalacao + mensalidade)) / (valorInstalacao + mensalidade) * 100;
-
-                lucroAno = lucroMes * 12;
-                ROIano = (lucroAno - (valorInstalacao + (mensalidade * 12))) / (valorInstalacao + (mensalidade * 12)) * 100;
-
-                resposta.innerHTML = `Quando você utilizar o FMS para identificar fluxo abaixo da média, e investir em ações que impulsionem esse movimento, você obterá:<br>
-                ${lucro.toFixed(2)} por dia, com um ROI de ${ROIpordia.toFixed()}%;<br>
-                ${lucroMes.toFixed(2)} por mês, com um ROI mensal de ${ROImensal.toFixed()}%<br>
-                ${lucroAno.toFixed(2)} por ano, com um ROI anual de ${ROIano.toFixed()}%<br>`;
+                mensalidade = 800; mediaFluxo = 650; baixaFluxo = 400;
+                faturamentoBruto = (mediaFluxo - baixaFluxo) * 100;
             }
 
-        } else if (tmhEstabelecimento == null){
-            if (porte.toLowerCase() == 'pequeno'){
-            let media = 120
-            let fluxo = 80
-            let alvo = media - fluxo
-            let faturamentoBruto = alvo  * 60.00
-            let lucro = faturamentoBruto * 0.11
-            let valorInvestido = lucro / 5 /*Baseado em um ROI 5:1*/
-            let lucroLiquido = lucro - valorInvestido 
-            let ROIpordia = ((lucroLiquido - 200) / 200) * 100
+            // Cálculos financeiros expandidos
+            lucroBase = faturamentoBruto * 0.11;
+            lucroLiquidoDiario = lucroBase - (lucroBase / 5); 
+            roiDIARIO = ((lucroLiquidoDiario - valorInstalacao) / valorInstalacao) * 100;
 
-            let lucroMes = lucroLiquido * qtdInvest
+            lucroMes = lucroLiquidoDiario * qtdInvest;
+            let custoM = valorInstalacao + mensalidade;
+            roiMENSAL = ((lucroMes - custoM) / custoM) * 100;
 
-            let ROImensal = ((lucroMes - 250) / 250) * 100
+            lucroAno = lucroMes * 12;
+            let custoA = valorInstalacao + (mensalidade * 12);
+            roiANUAL = ((lucroAno - custoA) / custoA) * 100;
 
-            let lucroAno = lucroMes * 12
+            // Variáveis de Estilo (Cor e Negrito)
+            let estiloLDiario = lucroLiquidoDiario >= 0 ? 'color: green; font-weight: bold;' : 'color: red; font-weight: bold;';
+            let estiloRDiario = roiDIARIO >= 0 ? 'color: green; font-weight: bold;' : 'color: red; font-weight: bold;';
+            let estiloLMensal = lucroMes >= 0 ? 'color: green; font-weight: bold;' : 'color: red; font-weight: bold;';
+            let estiloRMensal = roiMENSAL >= 0 ? 'color: green; font-weight: bold;' : 'color: red; font-weight: bold;';
+            let estiloLAno = lucroAno >= 0 ? 'color: green; font-weight: bold;' : 'color: red; font-weight: bold;';
+            let estiloRAno = roiANUAL >= 0 ? 'color: green; font-weight: bold;' : 'color: red; font-weight: bold;';
 
-            let ROIano = ((lucroAno - 800) / 800) * 100
+            resposta.innerHTML = `Resultado por Metragem:<br>
+                Diário: <span style="${estiloLDiario}">R$ ${lucroLiquidoDiario.toFixed(2)}</span> | ROI: <span style="${estiloRDiario}">${roiDIARIO.toFixed()}%</span><br>
+                Mensal: <span style="${estiloLMensal}">R$ ${lucroMes.toFixed(2)}</span> | ROI: <span style="${estiloRMensal}">${roiMENSAL.toFixed()}%</span><br>
+                Anual: <span style="${estiloLAno}">R$ ${lucroAno.toFixed(2)}</span> | ROI: <span style="${estiloRAno}">${roiANUAL.toFixed()}%</span>`;
+
+        } 
+        
+        // ===============================================================
+        // 3. LÓGICA POR PORTE (Executa se metragem for 0 e porte existir)
+        // ===============================================================
+        else if (porte == 'pequeno' || porte == 'médio' || porte == 'medio' || porte == 'grande') {
             
-            resposta.innerHTML = `Quando você utilizar o FMS para identificar fluxo abaixo da média, e investir em ações que impulsionem esse movimento, você obterá:<br>
-            ${lucroLiquido.toFixed(2)} por dia, com um ROI de ${ROIpordia.toFixed()}%;<br>
-            ${lucroMes.toFixed(2)} por mês, com um ROI mensal de ${ROImensal.toFixed()}%<br>
-            ${lucroAno.toFixed(2)} por ano, com um ROI anual de ${ROIano.toFixed()}%<br>
-            `
+            if (porte == 'pequeno') {
+                mediaFluxo = 120; baixaFluxo = 80; faturamentoBruto = (mediaFluxo - baixaFluxo) * 60.00;
+                lucroBase = faturamentoBruto * 0.11;
+                lucroLiquidoDiario = lucroBase - (lucroBase / 5);
+                roiDIARIO = ((lucroLiquidoDiario - 200) / 200) * 100;
+                lucroMes = lucroLiquidoDiario * qtdInvest;
+                roiMENSAL = ((lucroMes - 250) / 250) * 100;
+                lucroAno = lucroMes * 12;
+                roiANUAL = ((lucroAno - 800) / 800) * 100;
+            } 
+            else if (porte == 'médio' || porte == 'medio') {
+                mediaFluxo = 300; baixaFluxo = 200; faturamentoBruto = (mediaFluxo - baixaFluxo) * 65.00;
+                lucroBase = faturamentoBruto * 0.11;
+                lucroLiquidoDiario = lucroBase - (lucroBase / 5);
+                roiDIARIO = ((lucroLiquidoDiario - 300) / 300) * 100;
+                lucroMes = lucroLiquidoDiario * qtdInvest;
+                roiMENSAL = ((lucroMes - 350) / 350) * 100;
+                lucroAno = lucroMes * 12;
+                roiANUAL = ((lucroAno - 950) / 950) * 100;
+            } 
+            else if (porte == 'grande') {
+                mediaFluxo = 650; baixaFluxo = 450; faturamentoBruto = (mediaFluxo - baixaFluxo) * 80.00;
+                lucroBase = faturamentoBruto * 0.11;
+                lucroLiquidoDiario = lucroBase - (lucroBase / 5);
+                roiDIARIO = ((lucroLiquidoDiario - 500) / 500) * 100;
+                lucroMes = lucroLiquidoDiario * qtdInvest;
+                roiMENSAL = ((lucroMes - 550) / 550) * 100;
+                lucroAno = lucroMes * 12;
+                roiANUAL = ((lucroAno - 1150) / 1150) * 100;
+            }
 
-        } else if(porte.toLowerCase() == 'médio'){
-            let media = 300
-            let fluxo = 200
-            let alvo = media - fluxo
-            let faturamentoBruto = alvo * 65.00
-            let lucro = faturamentoBruto * 0.11
-            let valorInvestido = lucro / 5 /*Baseado em um ROI 4:1*/
-            let lucroLiquido = lucro - valorInvestido 
-            let ROIpordia = ((lucroLiquido - 300) / 300) * 100
+            // Variáveis de Estilo (Cor e Negrito)
+            let estiloLDiario = lucroLiquidoDiario >= 0 ? 'color: green; font-weight: bold;' : 'color: red; font-weight: bold;';
+            let estiloRDiario = roiDIARIO >= 0 ? 'color: green; font-weight: bold;' : 'color: red; font-weight: bold;';
+            let estiloLMensal = lucroMes >= 0 ? 'color: green; font-weight: bold;' : 'color: red; font-weight: bold;';
+            let estiloRMensal = roiMENSAL >= 0 ? 'color: green; font-weight: bold;' : 'color: red; font-weight: bold;';
+            let estiloLAno = lucroAno >= 0 ? 'color: green; font-weight: bold;' : 'color: red; font-weight: bold;';
+            let estiloRAno = roiANUAL >= 0 ? 'color: green; font-weight: bold;' : 'color: red; font-weight: bold;';
 
-            let lucroMes = lucroLiquido * qtdInvest
+            resposta.innerHTML = `Resultado pelo porte <b>${porte.toUpperCase()}</b>:<br>
+                Diário: <span style="${estiloLDiario}">R$ ${lucroLiquidoDiario.toFixed(2)}</span> | ROI: <span style="${estiloRDiario}">${roiDIARIO.toFixed()}%</span><br>
+                Mensal: <span style="${estiloLMensal}">R$ ${lucroMes.toFixed(2)}</span> | ROI: <span style="${estiloRMensal}">${roiMENSAL.toFixed()}%</span><br>
+                Anual: <span style="${estiloLAno}">R$ ${lucroAno.toFixed(2)}</span> | ROI: <span style="${estiloRAno}">${roiANUAL.toFixed()}%</span>`;
 
-            let ROImensal = ((lucroMes - 350) / 350) * 100
-
-            let lucroAno = lucroMes * 12
-
-            let ROIano = ((lucroAno - 950) / 950) * 100
-            
-            resposta.innerHTML = `Quando você utilizar o FMS para identificar fluxo abaixo da média, e investir em ações que impulsionem esse movimento, você obterá:<br>
-            ${lucroLiquido.toFixed(2)} por dia, com um ROI de ${ROIpordia.toFixed()}%;<br>
-            ${lucroMes.toFixed(2)} por mês, com um ROI mensal de ${ROImensal.toFixed()}%<br>
-            ${lucroAno.toFixed(2)} por ano, com um ROI anual de ${ROIano.toFixed()}%<br>
-            `
-            } else if(porte.toLowerCase() == 'grande'){
-            let media = 650
-            let fluxo = 450
-            let alvo = media - fluxo
-            let faturamentoBruto = alvo * 80.00
-            let lucro = faturamentoBruto * 0.11
-            let valorInvestido = lucro / 5 /*Baseado em um ROI 4:1*/
-            let lucroLiquido = lucro - valorInvestido 
-            let ROIpordia = ((lucroLiquido - 500) / 500) * 100
-
-            let lucroMes = lucroLiquido * qtdInvest
-
-            let ROImensal = ((lucroMes - 550) / 550) * 100
-
-            let lucroAno = lucroMes * 12
-
-            let ROIano = ((lucroAno - 1150) / 1150) * 100
-            
-            resposta.innerHTML = `Quando você utilizar o FMS para identificar fluxo abaixo da média, e investir em ações que impulsionem esse movimento, você obterá:<br>
-            ${lucroLiquido.toFixed(2)} por dia, com um ROI de ${ROIpordia.toFixed()}%;<br>
-            ${lucroMes.toFixed(2)} por mês, com um ROI mensal de ${ROImensal.toFixed()}%<br>
-            ${lucroAno.toFixed(2)} por ano, com um ROI anual de ${ROIano.toFixed()}%<br>
-            `
-        }
-    } else{
-            alert('Tipo de porte inválido inserido!')
+        } 
+        else {
+            alert('Informe a metragem ou selecione o porte corretamente!');
         }
     }
 </script>
