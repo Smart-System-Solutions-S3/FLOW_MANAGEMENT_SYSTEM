@@ -45,7 +45,7 @@ Telas do protótipo de alta fidelidade desenvolvido no Figma, cobrindo os princi
 ```
 [ screenshot — tela de login ]
 ```
-![Tela de Login](docs/screenshots/figma-login.png)
+![Tela de Login]([docs/screenshots/figma-login.png](https://res.cloudinary.com/dleo9ipkq/image/upload/v1772935049/tela_login-2_dqzty8.png))
 
 ---
 
